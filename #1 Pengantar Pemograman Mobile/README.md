@@ -1,6 +1,6 @@
 # Laporan Praktikum 01 : Pengantar Pemograman Mobile
 
-Nama    : Muhammad Farras Awaludin Alwi.
+Nama    : Muhammad Farras Awaludin Alwi<br>
 NIM     : 244107060032.
 Absen   : 12.
 
