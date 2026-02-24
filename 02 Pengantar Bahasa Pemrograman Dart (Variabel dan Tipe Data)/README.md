@@ -9,7 +9,7 @@ Absen   : 12<br>
 
 Output Yang Diminta
 
-![Output](Output_Soal_1.png)
+![Output](Ouput_Soal_1.png)
 
 
 
