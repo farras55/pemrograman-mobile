@@ -209,3 +209,45 @@ Output kode
 ---
 
 
+## Tugas Praktikum
+1. Silakan selesaikan Praktikum 1 sampai 3, lalu dokumentasikan berupa screenshot hasil pekerjaan beserta penjelasannya!
+
+2. Buatlah sebuah program yang dapat menampilkan bilangan prima dari angka 0 sampai 201 menggunakan Dart. Ketika bilangan prima   ditemukan, maka tampilkan nama lengkap dan NIM Anda.
+
+Berikut kode untuk tugas praktikum
+
+```dart
+void main() {
+  String nama = "Muhammad Farras Awaludin Alwi";
+  String nim = "244107060032";
+
+  for (int i = 0; i <= 201; i++) {
+    bool bilPrima = true;
+
+    for (int j = 2; j * j <= i; j++) {
+      if (i % j == 0) {
+        bilPrima = false;
+        break;
+      }
+    }
+
+    if (i < 2) {
+      bilPrima = false;
+    }
+
+    if (bilPrima) {
+      print("$i : $nama - $nim");
+    } else {
+      print("$i");
+    }
+  }
+}
+```
+
+Output Kode
+
+![Output7](img/Output7.png)
+
+Kumpulkan berupa link commit repo GitHub kepada dosen pengampu sesuai kesepakatan di kelas!
+
+
