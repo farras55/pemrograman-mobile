@@ -83,7 +83,7 @@ Output Kode
 
 ![Putput2](img/output2.png)
 
-
+---
 
 ## Praktikum 2 : Menerapkan Perulangan "while" dan "do-while"
 
@@ -141,4 +141,71 @@ Output Kode
 ![Output4](img/Output4.png)
 
 ---
+
+
+### Praktikum 3 : Menerapkan Perulangan "for" dan "break-continue"
+
+**Langkah 1**
+Ketik atau salin kode program berikut ke dalam fungsi main().
+
+```dart
+for (Index = 10; index < 27; index) {
+  print(Index);
+}
+```
+
+**Langkah 2**
+Silakan coba eksekusi (Run) kode pada langkah 1 tersebut. Apa yang terjadi? Jelaskan! Lalu perbaiki jika terjadi error.
+
+![error4](img/errror4.png)
+
+kode pada langkah 1 error karena penulisan variabel tidak konsisten (Index dan index berbeda), keyword for harus memakai format for (inisialisasi; kondisi; increment), dan bagian increment harus index++ (bukan index).
+
+perbaikan kode langkah 1 :
+
+```dart
+void main() {
+  for (int index = 10; index < 27; index++) {
+    print(index);
+  }
+}
+```
+
+Output kode :
+
+![Output5](img/output5.png)
+
+**Langkah 3**
+Tambahkan kode program berikut di dalam for-loop, lalu coba eksekusi (Run) kode Anda.
+
+```dart
+If (Index == 21) break;
+Else If (index > 1 || index < 7) continue;
+print(index);
+```
+
+Apa yang terjadi ? Jika terjadi error, silakan perbaiki namun tetap menggunakan for dan break-continue.
+
+![error5](img/error5.png)
+
+kode di langkah 3 error karena penulisan If, Else If harus huruf kecil menjadi if dan else if, serta variabel harus konsisten memakai index.
+
+Perbaikan kode langkah 3 :
+
+```dart
+void main() {
+  for (int index = 10; index < 27; index++) {
+    if (index == 21) break;
+    else if (index > 1 || index < 7) continue;
+    print(index);
+  }
+}
+```
+
+Output kode
+
+![Output6](img/Output6.png)
+
+---
+
 
