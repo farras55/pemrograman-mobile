@@ -414,6 +414,182 @@ print(mahasiswa2.$2); // Prints 'last'
 ```
 Apa yang terjadi ? Jika terjadi error, silakan perbaiki. Gantilah salah satu isi record dengan nama dan NIM Anda, lalu dokumentasikan hasilnya dan buat laporannya!
 
+output :
+![output5.4](img/output5.4.png)
+Dart bisa mengakses positional field dengan .$1, .$2, dst, dan named field dengan .a, .b, dst. Pada contoh di atas, isi .$1 diganti menjadi nama dan isi .a diganti menjadi NIM, sehingga output menampilkan data yang sudah di rubah
+
 ## Tugas Praktikum
+
+**1. Silakan selesaikan Praktikum 1 sampai 5, lalu dokumentasikan berupa screenshot hasil pekerjaan Anda beserta penjelasannya!**
+Sudah
+
+**2. yang dimaksud Functions dalam bahasa Dart!**
+Function adalah **sekumpulan instruksi** yang diberi **nama** (atau tanpa nama) untuk menjalankan tugas tertentu, sehingga kode bisa **dipakai ulang** tanpa menulis ulang. Function bisa:
+- menerima input (parameter),
+- memproses logika,
+- mengembalikan output (return),
+- atau tidak mengembalikan apa pun (`void`).
+
+**3. Jelaskan jenis-jenis parameter di Functions beserta contoh sintaksnya!**
+a. Positional (wajib urut)
+Harus diisi sesuai urutan parameter.
+```dart
+void sapa(String nama, int umur) {
+  print("Halo $nama, umur $umur");
+}
+```
+
+b. Optional positional (pakai [])
+Parameter boleh tidak diisi. Biasanya bertipe nullable (String?) atau punya default value.
+```dart
+void info(String nama, [String? kota]) {
+  print(kota == null ? nama : "$nama dari $kota");
+}
+```
+
+c. Named parameter (pakai {})
+Pemanggilan memakai nama parameternya, tidak harus urut.
+```dart
+void login({required String user, String role = "User"}) {
+  print("$user sebagai $role");
+}
+```
+
+d. Parameter default value
+Dart mengizinkan positional dulu, lalu named.
+```dart
+int pangkatDua([int n = 2]) => n * n;
+```
+
+**4. Jelaskan maksud Functions sebagai first-class objects beserta contoh sintaknya!**
+First-class objects artinya function bisa diperlakukan seperti data biasa, yaitu bisa:
+
+1. disimpan ke variabel,
+2. dikirim sebagai parameter,
+3. dikembalikan sebagai return value.
+
+1) Function disimpan ke variabel
+```dart
+int kali2(int x) => x * 2;
+
+void main() {
+  var operasi = kali2;
+  print(operasi(5)); // 10
+}
+```
+
+2) Function sebagai parameter (callback)
+```dart
+void jalankan(int angka, int Function(int) aksi) {
+  print(aksi(angka));
+}
+
+int tambah3(int x) => x + 3;
+
+void main() {
+  jalankan(10, tambah3); // 13
+}
+```
+3) Function sebagai return value
+```dart
+Function buatPengali(int n) {
+  return (int x) => x * n;
+}
+
+void main() {
+  var kali5 = buatPengali(5);
+  print(kali5(4)); // 20
+}
+```
+
+**5. Apa itu Anonymous Functions? Jelaskan dan berikan contohnya!**
+Anonymous function adalah function tanpa nama, biasanya dipakai untuk callback singkat.
+
+Bentuk umum:
+```dart
+(parameter) {
+  // isi function
+}
+```
+Contoh di forEach:
+```dart
+void main() {
+  var angka = [1, 2, 3];
+
+  angka.forEach((x) {
+    print(x * 10);
+  });
+}
+```
+Versi singkat (arrow function):
+```dart
+void main() {
+  var angka = [1, 2, 3];
+  angka.forEach((x) => print(x * 10));
+}
+```
+**6. Jelaskan perbedaan Lexical scope dan Lexical closures! Berikan contohnya!**
+1) Lexical Scope
+
+Lexical scope artinya akses variabel ditentukan oleh posisi kode (di mana variabel dideklarasikan).
+Function di dalam scope boleh mengakses variabel luar selama masih dalam “wilayah” yang sama.
+```dart
+void main() {
+  String nama = "Farras";
+
+  void tampil() {
+    print(nama); // bisa akses variabel luar karena masih dalam scope
+  }
+
+  tampil();
+}
+```
+2) Lexical Closure
+
+Closure terjadi ketika function “mengingat” variabel di luar scope-nya, bahkan setelah scope luar selesai dieksekusi.
+
+Contoh counter (function mengingat variabel count):
+```dart
+Function buatCounter() {
+  int count = 0;
+
+  return () {
+    count++;
+    return count;
+  };
+}
+
+void main() {
+  var counter = buatCounter();
+  print(counter()); // 1
+  print(counter()); // 2
+  print(counter()); // 3
+}
+```
+Bedanya paling gampang:
+
+- Lexical scope = aturan siapa bisa akses siapa karena posisi penulisan.
+- Closure = function menyimpan/mengunci variabel luar agar tetap hidup dan nilainya bisa berubah.
+
+**7. Jelaskan dengan contoh cara membuat return multiple value di Functions!**
+Cara paling rapi di Dart untuk return multiple value dari sebuah function adalah memakai Records. Record itu seperti “paket” yang bisa berisi beberapa nilai sekaligus, lalu di sisi pemanggil bisa langsung “dibongkar” lagi (destructuring) jadi variabel-variabel terpisah.
+```dart
+// Function mengembalikan 2 nilai sekaligus: nama dan NIM
+(String, String) getIdentitas() {
+  String nama = "Muhammad Farras Awaludin Alwi";
+  String nim = "244107060032";
+  return (nama, nim);
+}
+
+void main() {
+  // Destructuring: membongkar record jadi 2 variabel
+  var (nama, nim) = getIdentitas();
+
+  print("Nama: $nama");
+  print("NIM : $nim");
+}
+```
+Penjelasan singkatnya: getIdentitas() mengembalikan record bertipe (String, String), lalu var (nama, nim) mengambil nilai pertama ke nama dan nilai kedua ke nim, sehingga kamu bisa memakai dua hasil return itu seperti variabel biasa.
+
 
 
