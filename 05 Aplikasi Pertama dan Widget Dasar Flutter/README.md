@@ -47,3 +47,29 @@ A new Flutter project.
 4. Selesaikan Codelabs: Your first Flutter app, lalu buatlah laporan praktikumnya dan push ke repository GitHub Anda!
 5. README.md berisi: capture hasil akhir tiap praktikum (side-by-side, bisa juga berupa file GIF agar terlihat proses perubahan ketika ada aksi dari pengguna) dengan menampilkan NIM dan Nama Anda sebagai ciri pekerjaan Anda.
 6. Kumpulkan berupa link repository/commit GitHub Anda kepada dosen yang telah disepakati!
+
+
+
+1. tampilan awal
+![output_7](image/output8.png)
+
+2. tambah tombol
+![output_9](image/output9.png)
+
+3. isi tombol next dengan kata random
+![output10](image/output10.jpeg)
+
+4. text padding
+![output11](image/output11.jpeg)
+
+5. Menggabungkan widget padding dan text dengan widget card
+![output12](image/output12.jpeg)
+
+6. menambahkan tema dan gaya
+![output13](image/output13.jpeg)
+
+7. Menambahkan Themtext
+![out14](image/output14.jpeg)
+
+8. Menempatkan UI ditengah
+![out15](image/output15.jpeg)
