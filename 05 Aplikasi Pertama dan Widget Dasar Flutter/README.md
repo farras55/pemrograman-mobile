@@ -49,27 +49,27 @@ A new Flutter project.
 6. Kumpulkan berupa link repository/commit GitHub Anda kepada dosen yang telah disepakati!
 
 
-
-1. tampilan awal
+**4**
+A. tampilan awal
 ![output_7](image/output8.png)
 
-2. tambah tombol
+B. tambah tombol
 ![output_9](image/output9.png)
 
-3. isi tombol next dengan kata random
+C. isi tombol next dengan kata random
 ![output10](image/output10.jpeg)
 
-4. text padding
+D. text padding
 ![output11](image/output11.jpeg)
 
-5. Menggabungkan widget padding dan text dengan widget card
+E. Menggabungkan widget padding dan text dengan widget card
 ![output12](image/output12.jpeg)
 
-6. menambahkan tema dan gaya
+F. menambahkan tema dan gaya
 ![output13](image/output13.jpeg)
 
-7. Menambahkan Themtext
+G. Menambahkan Themtext
 ![out14](image/output14.jpeg)
 
-8. Menempatkan UI ditengah
+H. Menempatkan UI ditengah
 ![out15](image/output15.jpeg)
