@@ -2,6 +2,14 @@
 
 A new Flutter project.
 
+# Laporan Praktikum 05 : Aplikasi Pertama dan Widget Dasar Flutter
+
+Nama  : Muhammad Farras Awaludin Alwi  
+NIM   : 244107060032  
+Absen : 12  
+
+---
+
 
 ## Praktikum 3 : Membuat Repository GitHub dan Laporan Praktikum
 ![file_vscode](image/output1.png)
@@ -50,6 +58,8 @@ A new Flutter project.
 
 
 **4**
+-
+
 A. tampilan awal
 ![output_7](image/output8.png)
 
@@ -73,3 +83,12 @@ G. Menambahkan Themtext
 
 H. Menempatkan UI ditengah
 ![out15](image/output15.jpeg)
+
+I. Menambahkan tombol dan fungsi like
+![out16](image/output16.jpeg)
+
+J. Menambahkan kolom navigasi
+![out17](image/output17.jpeg)
+
+K. Menambahkan halaman baru
+![out18](image/output18.jpeg)
