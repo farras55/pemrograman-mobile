@@ -189,7 +189,7 @@ class MyApp extends StatelessWidget {
 
 Output kode:
 
-![output praktikum 1](img/praktikum1_hasil.jpeg)
+![output praktikum 1](img/praktikum1_hasil.png)
 
 Setelah dijalankan, aplikasi menampilkan bagian judul yang berisi teks `Wisata Gunung di Batu`, lokasi `Batu, Malang, Indonesia`, ikon bintang berwarna merah, dan angka rating `41`.
 
@@ -381,7 +381,7 @@ class MyApp extends StatelessWidget {
 
 Output kode:
 
-![output praktikum 2](img/praktikum2_hasil.jpeg)
+![output praktikum 2](img/praktikum2_hasil.png)
 
 Setelah dijalankan, aplikasi menampilkan bagian judul dari praktikum sebelumnya dan tambahan tiga tombol di bawahnya. Tombol tersebut terdiri dari ikon dan teks `CALL`, `ROUTE`, serta `SHARE`.
 
@@ -560,7 +560,7 @@ class MyApp extends StatelessWidget {
 
 Output kode:
 
-![output praktikum 3](img/praktikum3_hasil.jpeg)
+![output praktikum 3](img/praktikum3_hasil.png)
 
 Setelah kode dijalankan, aplikasi menampilkan bagian judul, bagian tombol, dan bagian teks deskripsi tempat wisata. Teks deskripsi berada di bawah tombol `CALL`, `ROUTE`, dan `SHARE`.
 
@@ -793,7 +793,7 @@ class MyApp extends StatelessWidget {
 
 Output kode:
 
-![output praktikum 4](img/praktikum4_hasil.jpeg)
+![output praktikum 4](img/praktikum4_hasil.png)
 
 Setelah kode dijalankan, aplikasi menampilkan gambar wisata pada bagian paling atas. Di bawah gambar terdapat bagian judul, tombol `CALL`, `ROUTE`, `SHARE`, dan teks deskripsi tempat wisata.
 
@@ -813,10 +813,10 @@ Setiap hasil praktikum didokumentasikan menggunakan screenshot dan dimasukkan ke
 Daftar screenshot yang digunakan:
 
 ```text
-img/praktikum1_hasil.jpeg
-img/praktikum2_hasil.jpeg
-img/praktikum3_hasil.jpeg
-img/praktikum4_hasil.jpeg
+img/praktikum1_hasil.png
+img/praktikum2_hasil.png
+img/praktikum3_hasil.png
+img/praktikum4_hasil.png
 ```
 
 Dengan demikian, hasil dari Praktikum 1 sampai Praktikum 4 telah terdokumentasi di dalam laporan.
@@ -1084,7 +1084,7 @@ Di dalam `Card`, terdapat widget `Row` yang digunakan untuk menyusun nama barang
 
 Output halaman utama:
 
-![output praktikum 5 home](img/praktikum5_home.jpeg)
+![output praktikum 5 home](img/praktikum5_home.png)
 
 Pada gambar tersebut, halaman utama berhasil menampilkan daftar barang belanja, yaitu `Sugar` dan `Salt`.
 
@@ -1214,7 +1214,7 @@ Kemudian data barang ditampilkan di tengah layar menggunakan widget `Center` dan
 
 Output halaman detail:
 
-![output praktikum 5 detail](img/praktikum5_detail.jpeg)
+![output praktikum 5 detail](img/praktikum5_detail.png)
 
 Pada gambar tersebut, ketika item `Salt` ditekan, aplikasi berpindah ke halaman detail dan menampilkan teks `Salt with 2000`.
 
