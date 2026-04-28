@@ -1377,12 +1377,6 @@ Route aplikasi didefinisikan pada file `main.dart`. Route `/` digunakan untuk me
 
 Dengan demikian, Praktikum 5 berhasil membuat aplikasi Flutter multi halaman yang dapat berpindah halaman dan mengirim data dari halaman utama ke halaman detail.
 
-## Tugas Praktikum 1
-
-...
-
----
-
 ## Tugas Praktikum 2
 
 ...
