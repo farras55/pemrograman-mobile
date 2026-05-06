@@ -1379,4 +1379,7 @@ Dengan demikian, Praktikum 5 berhasil membuat aplikasi Flutter multi halaman yan
 
 ## Tugas Praktikum 2
 
+![output Tugas 2 home](img/tugas2_home.jpeg)
+![output Tugas 2 detail](img/tugas2_detail.jpeg)
+
 ...
