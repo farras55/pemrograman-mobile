@@ -525,3 +525,565 @@ Aplikasi ini dapat mengambil daftar kamera pada device, memilih kamera pertama, 
 Plugin utama yang digunakan adalah `camera`, sedangkan `path_provider` dan `path` digunakan untuk mendukung pengelolaan lokasi file pada berbagai platform.
 
 Dengan praktikum ini, saya memahami cara kerja dasar kamera di Flutter, mulai dari inisialisasi kamera menggunakan `CameraController`, menampilkan preview dengan `CameraPreview`, mengambil foto dengan `takePicture()`, hingga menampilkan hasil foto menggunakan `Image.file`.
+
+---
+
+## Praktikum 2 : Membuat Photo Filter Carousel
+
+**Langkah 1**  
+Buatlah project Flutter baru dengan nama `photo_filter_carousel`.
+
+Pada langkah ini, project Flutter baru berhasil dibuat. Project ini digunakan untuk membuat aplikasi photo filter carousel, yaitu tampilan foto dengan pilihan filter warna yang dapat digeser secara horizontal.
+
+---
+
+**Langkah 2**  
+Buat folder baru bernama `widget` di dalam folder `lib`.
+
+Kemudian buat file baru dengan nama `filter_selector.dart`.
+
+Struktur folder project menjadi seperti berikut.
+
+```text
+photo_filter_carousel
+├── lib
+│   ├── main.dart
+│   └── widget
+│       └── filter_selector.dart
+├── pubspec.yaml
+```
+
+File `filter_selector.dart` digunakan untuk membuat tampilan pilihan filter warna yang dapat digeser. Widget ini juga membuat selection ring atau lingkaran putih sebagai penanda filter yang sedang dipilih, serta dark gradient pada bagian bawah layar.
+
+Isi file `lib/widget/filter_selector.dart` adalah sebagai berikut.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ViewportOffset;
+
+import 'carousel_flowdelegate.dart';
+import 'filter_item.dart';
+
+@immutable
+class FilterSelector extends StatefulWidget {
+  const FilterSelector({
+    super.key,
+    required this.filters,
+    required this.onFilterChanged,
+    this.padding = const EdgeInsets.symmetric(vertical: 24),
+  });
+
+  final List<Color> filters;
+  final void Function(Color selectedColor) onFilterChanged;
+  final EdgeInsets padding;
+
+  @override
+  State<FilterSelector> createState() => _FilterSelectorState();
+}
+
+class _FilterSelectorState extends State<FilterSelector> {
+  static const _filtersPerScreen = 5;
+  static const _viewportFractionPerItem = 1.0 / _filtersPerScreen;
+
+  late final PageController _controller;
+  late int _page;
+
+  int get filterCount => widget.filters.length;
+
+  Color itemColor(int index) => widget.filters[index % filterCount];
+
+  @override
+  void initState() {
+    super.initState();
+    _page = 0;
+    _controller = PageController(
+      initialPage: _page,
+      viewportFraction: _viewportFractionPerItem,
+    );
+    _controller.addListener(_onPageChanged);
+  }
+
+  void _onPageChanged() {
+    final page = (_controller.page ?? 0).round();
+    if (page != _page) {
+      _page = page;
+      widget.onFilterChanged(widget.filters[page]);
+    }
+  }
+
+  void _onFilterTapped(int index) {
+    _controller.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 450),
+      curve: Curves.ease,
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scrollable(
+      controller: _controller,
+      axisDirection: AxisDirection.right,
+      physics: const PageScrollPhysics(),
+      viewportBuilder: (context, viewportOffset) {
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            final itemSize = constraints.maxWidth * _viewportFractionPerItem;
+            viewportOffset
+              ..applyViewportDimension(constraints.maxWidth)
+              ..applyContentDimensions(0.0, itemSize * (filterCount - 1));
+
+            return Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                _buildShadowGradient(itemSize),
+                _buildCarousel(
+                  viewportOffset: viewportOffset,
+                  itemSize: itemSize,
+                ),
+                _buildSelectionRing(itemSize),
+              ],
+            );
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildShadowGradient(double itemSize) {
+    return SizedBox(
+      height: itemSize * 2 + widget.padding.vertical,
+      child: const DecoratedBox(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.transparent,
+              Colors.black,
+            ],
+          ),
+        ),
+        child: SizedBox.expand(),
+      ),
+    );
+  }
+
+  Widget _buildCarousel({
+    required ViewportOffset viewportOffset,
+    required double itemSize,
+  }) {
+    return Container(
+      height: itemSize,
+      margin: widget.padding,
+      child: Flow(
+        delegate: CarouselFlowDelegate(
+          viewportOffset: viewportOffset,
+          filtersPerScreen: _filtersPerScreen,
+        ),
+        children: [
+          for (int i = 0; i < filterCount; i++)
+            FilterItem(
+              onFilterSelected: () => _onFilterTapped(i),
+              color: itemColor(i),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSelectionRing(double itemSize) {
+    return IgnorePointer(
+      child: Padding(
+        padding: widget.padding,
+        child: SizedBox(
+          width: itemSize,
+          height: itemSize,
+          child: const DecoratedBox(
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.fromBorderSide(
+                BorderSide(width: 6, color: Colors.white),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+Pada kode tersebut, class `FilterSelector` dibuat sebagai `StatefulWidget` karena filter yang dipilih dapat berubah ketika carousel digeser.
+
+Variabel `filters` digunakan untuk menyimpan daftar warna filter. Variabel `onFilterChanged` digunakan untuk mengirim warna filter yang sedang dipilih ke widget lain. Variabel `padding` digunakan untuk memberikan jarak pada bagian atas dan bawah selector.
+
+`PageController` digunakan untuk mengontrol pergeseran carousel. Ketika halaman atau filter berubah, method `_onPageChanged()` akan memanggil `onFilterChanged` agar warna filter pada foto ikut berubah.
+
+Method `_buildShadowGradient()` digunakan untuk membuat efek gradasi gelap pada bagian bawah layar. Method `_buildCarousel()` digunakan untuk membuat daftar item filter yang dapat digeser. Method `_buildSelectionRing()` digunakan untuk membuat lingkaran putih sebagai penanda filter yang sedang dipilih.
+
+---
+
+**Langkah 3**  
+Buat file baru bernama `filter_carousel.dart` di dalam folder `widget`.
+
+File ini digunakan sebagai tampilan utama aplikasi photo filter carousel.
+
+Struktur folder menjadi seperti berikut.
+
+```text
+photo_filter_carousel
+├── lib
+│   ├── main.dart
+│   └── widget
+│       ├── filter_selector.dart
+│       └── filter_carousel.dart
+├── pubspec.yaml
+```
+
+Isi file `lib/widget/filter_carousel.dart` adalah sebagai berikut.
+
+```dart
+import 'package:flutter/material.dart';
+
+import 'filter_selector.dart';
+
+@immutable
+class PhotoFilterCarousel extends StatefulWidget {
+  const PhotoFilterCarousel({super.key});
+
+  @override
+  State<PhotoFilterCarousel> createState() => _PhotoFilterCarouselState();
+}
+
+class _PhotoFilterCarouselState extends State<PhotoFilterCarousel> {
+  final _filters = [
+    Colors.white,
+    ...List.generate(
+      Colors.primaries.length,
+      (index) => Colors.primaries[(index * 4) % Colors.primaries.length],
+    )
+  ];
+
+  final _filterColor = ValueNotifier<Color>(Colors.white);
+
+  void _onFilterChanged(Color value) {
+    _filterColor.value = value;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: _buildPhotoWithFilter(),
+          ),
+          Positioned(
+            left: 0.0,
+            right: 0.0,
+            bottom: 0.0,
+            child: _buildFilterSelector(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPhotoWithFilter() {
+    return ValueListenableBuilder(
+      valueListenable: _filterColor,
+      builder: (context, color, child) {
+        return Image.network(
+          'https://docs.flutter.dev/cookbook/img-files'
+          '/effects/instagram-buttons/millennial-dude.jpg',
+          color: color.withOpacity(0.5),
+          colorBlendMode: BlendMode.color,
+          fit: BoxFit.cover,
+        );
+      },
+    );
+  }
+
+  Widget _buildFilterSelector() {
+    return FilterSelector(
+      onFilterChanged: _onFilterChanged,
+      filters: _filters,
+    );
+  }
+}
+```
+
+Pada kode tersebut, class `PhotoFilterCarousel` digunakan untuk menampilkan foto dan pilihan filter.
+
+Variabel `_filters` berisi daftar warna yang digunakan sebagai pilihan filter. Warna pertama adalah `Colors.white`, kemudian dilanjutkan dengan beberapa warna dari `Colors.primaries`.
+
+Variabel `_filterColor` menggunakan `ValueNotifier<Color>` untuk menyimpan warna filter yang sedang aktif. Ketika filter berubah, method `_onFilterChanged()` akan memperbarui nilai `_filterColor`.
+
+Widget `ValueListenableBuilder` digunakan agar tampilan foto dapat berubah secara otomatis ketika nilai `_filterColor` berubah.
+
+Foto ditampilkan menggunakan `Image.network`. Warna filter diterapkan menggunakan properti `color` dan `colorBlendMode`.
+
+```dart
+color: color.withOpacity(0.5),
+colorBlendMode: BlendMode.color,
+```
+
+Dengan kode tersebut, warna filter akan dicampurkan ke gambar utama.
+
+---
+
+**Langkah 4**  
+Buat file baru bernama `carousel_flowdelegate.dart` di dalam folder `widget`.
+
+File ini digunakan untuk mengatur posisi, ukuran, dan transparansi setiap item filter pada carousel.
+
+Struktur folder menjadi seperti berikut.
+
+```text
+photo_filter_carousel
+├── lib
+│   ├── main.dart
+│   └── widget
+│       ├── filter_selector.dart
+│       ├── filter_carousel.dart
+│       └── carousel_flowdelegate.dart
+├── pubspec.yaml
+```
+
+Isi file `lib/widget/carousel_flowdelegate.dart` adalah sebagai berikut.
+
+```dart
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart' show ViewportOffset;
+
+class CarouselFlowDelegate extends FlowDelegate {
+  CarouselFlowDelegate({
+    required this.viewportOffset,
+    required this.filtersPerScreen,
+  }) : super(repaint: viewportOffset);
+
+  final ViewportOffset viewportOffset;
+  final int filtersPerScreen;
+
+  @override
+  void paintChildren(FlowPaintingContext context) {
+    final count = context.childCount;
+
+    final size = context.size.width;
+
+    final itemExtent = size / filtersPerScreen;
+
+    final active = viewportOffset.pixels / itemExtent;
+
+    final min = math.max(0, active.floor() - 3).toInt();
+
+    final max = math.min(count - 1, active.ceil() + 3).toInt();
+
+    for (var index = min; index <= max; index++) {
+      final itemXFromCenter = itemExtent * index - viewportOffset.pixels;
+      final percentFromCenter = 1.0 - (itemXFromCenter / (size / 2)).abs();
+      final itemScale = 0.5 + (percentFromCenter * 0.5);
+      final opacity = 0.25 + (percentFromCenter * 0.75);
+
+      final itemTransform = Matrix4.identity()
+        ..translate((size - itemExtent) / 2)
+        ..translate(itemXFromCenter)
+        ..translate(itemExtent / 2, itemExtent / 2)
+        ..multiply(Matrix4.diagonal3Values(itemScale, itemScale, 1.0))
+        ..translate(-itemExtent / 2, -itemExtent / 2);
+
+      context.paintChild(
+        index,
+        transform: itemTransform,
+        opacity: opacity,
+      );
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CarouselFlowDelegate oldDelegate) {
+    return oldDelegate.viewportOffset != viewportOffset;
+  }
+}
+```
+
+Pada kode tersebut, class `CarouselFlowDelegate` digunakan untuk mengatur cara item filter digambar pada layar.
+
+Method `paintChildren()` digunakan untuk menghitung posisi setiap item filter. Item yang berada di tengah akan terlihat lebih besar dan lebih jelas, sedangkan item yang berada di sisi kiri atau kanan akan terlihat lebih kecil dan transparan.
+
+Variabel `itemScale` digunakan untuk mengatur ukuran item filter. Variabel `opacity` digunakan untuk mengatur transparansi item filter. Semakin dekat item ke tengah layar, maka ukuran dan opacity akan semakin besar.
+
+Method `shouldRepaint()` digunakan untuk menentukan apakah tampilan perlu digambar ulang. Jika posisi scroll berubah, maka carousel perlu di-render ulang agar posisi item filter ikut berubah.
+
+---
+
+**Langkah 5**  
+Buat file baru bernama `filter_item.dart` di dalam folder `widget`.
+
+File ini digunakan untuk membuat bentuk setiap item filter warna.
+
+Struktur folder menjadi seperti berikut.
+
+```text
+photo_filter_carousel
+├── lib
+│   ├── main.dart
+│   └── widget
+│       ├── filter_selector.dart
+│       ├── filter_carousel.dart
+│       ├── carousel_flowdelegate.dart
+│       └── filter_item.dart
+├── pubspec.yaml
+```
+
+Isi file `lib/widget/filter_item.dart` adalah sebagai berikut.
+
+```dart
+import 'package:flutter/material.dart';
+
+@immutable
+class FilterItem extends StatelessWidget {
+  const FilterItem({
+    super.key,
+    required this.color,
+    this.onFilterSelected,
+  });
+
+  final Color color;
+  final VoidCallback? onFilterSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onFilterSelected,
+      child: AspectRatio(
+        aspectRatio: 1.0,
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: ClipOval(
+            child: Image.network(
+              'https://docs.flutter.dev/cookbook/img-files'
+              '/effects/instagram-buttons/millennial-texture.jpg',
+              color: color.withOpacity(0.5),
+              colorBlendMode: BlendMode.hardLight,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+```
+
+Pada kode tersebut, class `FilterItem` digunakan untuk membuat item filter berbentuk lingkaran.
+
+Widget `GestureDetector` digunakan agar item filter dapat ditekan. Ketika item ditekan, fungsi `onFilterSelected` akan dijalankan.
+
+Widget `AspectRatio` digunakan agar ukuran item tetap berbentuk persegi dengan rasio `1.0`.
+
+Widget `ClipOval` digunakan untuk membuat gambar berbentuk lingkaran.
+
+Gambar filter ditampilkan menggunakan `Image.network`, kemudian diberi warna filter menggunakan properti `color` dan `colorBlendMode`.
+
+```dart
+color: color.withOpacity(0.5),
+colorBlendMode: BlendMode.hardLight,
+```
+
+Dengan demikian, setiap item filter akan menampilkan warna yang berbeda sesuai dengan data warna yang dikirimkan.
+
+---
+
+**Langkah 6**  
+Implementasikan `PhotoFilterCarousel` pada file `main.dart`.
+
+Buka file `lib/main.dart`, kemudian ubah seluruh isi file menjadi seperti berikut.
+
+```dart
+import 'package:flutter/material.dart';
+
+import 'widget/filter_carousel.dart';
+
+void main() {
+  runApp(
+    const MaterialApp(
+      home: PhotoFilterCarousel(),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
+}
+```
+
+Pada kode tersebut, `PhotoFilterCarousel` dijadikan sebagai halaman utama aplikasi melalui properti `home`.
+
+```dart
+home: PhotoFilterCarousel(),
+```
+
+Properti `debugShowCheckedModeBanner: false` digunakan untuk menghilangkan tulisan debug pada pojok kanan atas aplikasi.
+
+Setelah semua file selesai dibuat, jalankan aplikasi dengan perintah berikut.
+
+```bash
+flutter run
+```
+
+Atau jalankan menggunakan tombol **F5** pada Visual Studio Code.
+
+---
+
+### Output Praktikum
+
+Setelah aplikasi dijalankan, aplikasi menampilkan halaman photo filter carousel.
+
+Output aplikasi:
+
+![output praktikum 2](img/praktikum2_hasil.jpeg)
+
+Pada hasil yang ditampilkan, bagian utama aplikasi menggunakan background gelap. Di bagian bawah terdapat selector berbentuk lingkaran putih yang digunakan untuk menandai filter yang sedang dipilih.
+
+Jika gambar dari `Image.network` berhasil dimuat, maka foto utama akan tampil dan warna foto akan berubah sesuai filter yang dipilih. Jika gambar belum tampil, bagian utama aplikasi akan tetap terlihat gelap karena background utama pada widget `Material` menggunakan warna hitam.
+
+---
+
+### Penjelasan
+
+Pada praktikum ini, saya mempelajari cara membuat photo filter carousel menggunakan Flutter.
+
+Project dibuat dengan nama `photo_filter_carousel`. Pada project ini dibuat beberapa file widget, yaitu `filter_carousel.dart`, `filter_selector.dart`, `carousel_flowdelegate.dart`, dan `filter_item.dart`.
+
+File `filter_carousel.dart` digunakan sebagai halaman utama aplikasi. Di dalam file ini terdapat widget `PhotoFilterCarousel` yang berfungsi untuk menampilkan foto utama dan selector filter pada bagian bawah layar.
+
+Foto utama ditampilkan menggunakan `Image.network`. Warna filter diterapkan pada foto menggunakan properti `color` dan `colorBlendMode`. Warna filter disimpan menggunakan `ValueNotifier<Color>`, sehingga ketika filter berubah, tampilan foto ikut diperbarui.
+
+File `filter_selector.dart` digunakan untuk membuat daftar filter yang dapat digeser secara horizontal. Widget ini menggunakan `Scrollable`, `PageController`, dan `Flow` untuk membuat efek carousel. Selain itu, widget ini juga membuat selection ring berbentuk lingkaran putih sebagai penanda filter yang sedang aktif.
+
+File `carousel_flowdelegate.dart` digunakan untuk mengatur tampilan item filter pada carousel. Dengan menggunakan `FlowDelegate`, posisi, ukuran, dan opacity item filter dapat diatur berdasarkan jaraknya dari posisi tengah. Item yang berada di tengah akan terlihat lebih besar dan jelas, sedangkan item yang berada di samping akan terlihat lebih kecil dan transparan.
+
+File `filter_item.dart` digunakan untuk membuat setiap item filter. Widget ini menggunakan `GestureDetector` agar item filter dapat ditekan. Gambar filter dibuat berbentuk lingkaran menggunakan `ClipOval`, kemudian diberi efek warna menggunakan `colorBlendMode`.
+
+Pada file `main.dart`, widget `PhotoFilterCarousel` dijadikan halaman utama aplikasi. Properti `debugShowCheckedModeBanner: false` digunakan untuk menghilangkan tulisan debug pada pojok kanan atas.
+
+Dengan demikian, Praktikum 2 berhasil membuat tampilan photo filter carousel sederhana menggunakan Flutter.
+
+---
+
+### Kesimpulan
+
+Pada Praktikum 2 Jobsheet 9 ini, saya berhasil membuat aplikasi photo filter carousel.
+
+Aplikasi ini menampilkan foto utama dengan filter warna yang dapat dipilih melalui carousel di bagian bawah layar. Setiap filter ditampilkan dalam bentuk lingkaran dan dapat digeser ke kanan atau kiri.
+
+Praktikum ini memperkenalkan penggunaan beberapa widget penting seperti `Stack`, `Positioned`, `ValueListenableBuilder`, `Scrollable`, `Flow`, `FlowDelegate`, `GestureDetector`, dan `ClipOval`.
+
+Dengan praktikum ini, saya memahami cara membuat tampilan carousel custom dan menerapkan efek warna pada gambar menggunakan Flutter.
