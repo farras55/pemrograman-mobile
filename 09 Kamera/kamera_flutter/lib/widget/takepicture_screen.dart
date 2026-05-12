@@ -1,6 +1,6 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
-
+import 'filter_carousel.dart';
 import 'displaypicture_screen.dart';
 
 class TakePictureScreen extends StatefulWidget {
@@ -66,7 +66,7 @@ class TakePictureScreenState extends State<TakePictureScreen> {
 
             await Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => DisplayPictureScreen(
+                builder: (context) => PhotoFilterCarousel(
                   imagePath: image.path,
                 ),
               ),

@@ -1,10 +1,17 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import 'filter_selector.dart';
 
 @immutable
 class PhotoFilterCarousel extends StatefulWidget {
-  const PhotoFilterCarousel({super.key});
+  const PhotoFilterCarousel({
+    super.key,
+    required this.imagePath,
+  });
+
+  final String imagePath;
 
   @override
   State<PhotoFilterCarousel> createState() => _PhotoFilterCarouselState();
@@ -23,6 +30,12 @@ class _PhotoFilterCarouselState extends State<PhotoFilterCarousel> {
 
   void _onFilterChanged(Color value) {
     _filterColor.value = value;
+  }
+
+  @override
+  void dispose() {
+    _filterColor.dispose();
+    super.dispose();
   }
 
   @override
@@ -46,18 +59,18 @@ class _PhotoFilterCarouselState extends State<PhotoFilterCarousel> {
   }
 
   Widget _buildPhotoWithFilter() {
-  return ValueListenableBuilder(
-    valueListenable: _filterColor,
-    builder: (context, color, child) {
-      return Image.asset(
-        'assets/images/image.png',
-        color: color.withOpacity(0.5),
-        colorBlendMode: BlendMode.color,
-        fit: BoxFit.cover,
-      );
-    },
-  );
-}
+    return ValueListenableBuilder<Color>(
+      valueListenable: _filterColor,
+      builder: (context, color, child) {
+        return Image.file(
+          File(widget.imagePath),
+          color: color.withOpacity(0.5),
+          colorBlendMode: BlendMode.color,
+          fit: BoxFit.cover,
+        );
+      },
+    );
+  }
 
   Widget _buildFilterSelector() {
     return FilterSelector(

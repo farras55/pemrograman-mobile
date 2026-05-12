@@ -1087,3 +1087,330 @@ Aplikasi ini menampilkan foto utama dengan filter warna yang dapat dipilih melal
 Praktikum ini memperkenalkan penggunaan beberapa widget penting seperti `Stack`, `Positioned`, `ValueListenableBuilder`, `Scrollable`, `Flow`, `FlowDelegate`, `GestureDetector`, dan `ClipOval`.
 
 Dengan praktikum ini, saya memahami cara membuat tampilan carousel custom dan menerapkan efek warna pada gambar menggunakan Flutter.
+
+---
+
+## Tugas Praktikum
+
+### 1. Menyelesaikan Praktikum 1 dan Praktikum 2
+
+Praktikum 1 dan Praktikum 2 telah diselesaikan.
+
+Pada Praktikum 1, aplikasi dibuat untuk mengakses kamera perangkat, menampilkan preview kamera, mengambil foto, dan menampilkan hasil foto.
+
+Pada Praktikum 2, aplikasi dibuat untuk menampilkan photo filter carousel, yaitu tampilan foto dengan pilihan filter warna yang dapat digeser secara horizontal.
+
+Hasil pekerjaan didokumentasikan menggunakan screenshot dan dimasukkan ke dalam file `README.md`.
+
+Daftar screenshot yang digunakan:
+
+```text
+img/praktikum1_preview.jpeg
+img/praktikum1_hasil.jpeg
+img/praktikum2_hasil.jpeg
+img/tugas_hasil.jpeg
+```
+
+Output Praktikum 1:
+
+![output preview kamera](img/praktikum1_preview.jpeg)
+
+![output hasil foto](img/praktikum1_hasil.jpeg)
+
+Output Praktikum 2:
+
+![output photo filter carousel](img/praktikum2_hasil.jpeg)
+
+Setelah dokumentasi selesai, project dipush ke repository GitHub menggunakan perintah berikut.
+
+```bash
+git add .
+git commit -m "Menyelesaikan praktikum 1 dan 2 jobsheet 9"
+git push
+```
+
+---
+
+### 2. Menggabungkan Praktikum 1 dan Praktikum 2
+
+Pada tugas ini, Praktikum 1 dan Praktikum 2 digabungkan agar setelah pengguna mengambil foto menggunakan kamera, foto tersebut langsung ditampilkan pada halaman filter carousel.
+
+Alur aplikasi setelah digabungkan adalah sebagai berikut.
+
+```text
+Aplikasi dijalankan
+        ↓
+Preview kamera ditampilkan
+        ↓
+Pengguna menekan tombol kamera
+        ↓
+Foto berhasil diambil
+        ↓
+Aplikasi berpindah ke halaman filter carousel
+        ↓
+Foto hasil kamera ditampilkan
+        ↓
+Pengguna dapat memilih filter warna
+```
+
+Pada Praktikum 1, hasil foto sebelumnya ditampilkan menggunakan `DisplayPictureScreen`. Pada tugas ini, hasil foto diarahkan ke halaman `PhotoFilterCarousel`.
+
+Agar foto hasil kamera dapat digunakan pada halaman filter, widget `PhotoFilterCarousel` dimodifikasi agar menerima parameter `imagePath`.
+
+Kode pada file `filter_carousel.dart` diubah menjadi seperti berikut.
+
+```dart
+import 'dart:io';
+
+import 'package:flutter/material.dart';
+
+import 'filter_selector.dart';
+
+@immutable
+class PhotoFilterCarousel extends StatefulWidget {
+  const PhotoFilterCarousel({
+    super.key,
+    required this.imagePath,
+  });
+
+  final String imagePath;
+
+  @override
+  State<PhotoFilterCarousel> createState() => _PhotoFilterCarouselState();
+}
+
+class _PhotoFilterCarouselState extends State<PhotoFilterCarousel> {
+  final _filters = [
+    Colors.white,
+    ...List.generate(
+      Colors.primaries.length,
+      (index) => Colors.primaries[(index * 4) % Colors.primaries.length],
+    ),
+  ];
+
+  final _filterColor = ValueNotifier<Color>(Colors.white);
+
+  void _onFilterChanged(Color value) {
+    _filterColor.value = value;
+  }
+
+  @override
+  void dispose() {
+    _filterColor.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.black,
+      child: Stack(
+        children: [
+          Positioned.fill(
+            child: _buildPhotoWithFilter(),
+          ),
+          Positioned(
+            left: 0.0,
+            right: 0.0,
+            bottom: 0.0,
+            child: _buildFilterSelector(),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPhotoWithFilter() {
+    return ValueListenableBuilder<Color>(
+      valueListenable: _filterColor,
+      builder: (context, color, child) {
+        return Image.file(
+          File(widget.imagePath),
+          color: color.withOpacity(0.5),
+          colorBlendMode: BlendMode.color,
+          fit: BoxFit.cover,
+        );
+      },
+    );
+  }
+
+  Widget _buildFilterSelector() {
+    return FilterSelector(
+      onFilterChanged: _onFilterChanged,
+      filters: _filters,
+    );
+  }
+}
+```
+
+Pada kode tersebut, `PhotoFilterCarousel` menerima parameter `imagePath`.
+
+```dart
+final String imagePath;
+```
+
+Parameter tersebut digunakan untuk menyimpan lokasi file foto hasil kamera.
+
+Karena foto berasal dari kamera, maka gambar ditampilkan menggunakan `Image.file`, bukan `Image.network`.
+
+```dart
+Image.file(
+  File(widget.imagePath),
+  color: color.withOpacity(0.5),
+  colorBlendMode: BlendMode.color,
+  fit: BoxFit.cover,
+);
+```
+
+Selanjutnya, pada file `takepicture_screen.dart`, bagian navigasi setelah foto diambil diubah agar menuju ke halaman `PhotoFilterCarousel`.
+
+Import file `filter_carousel.dart`.
+
+```dart
+import 'filter_carousel.dart';
+```
+
+Kemudian ubah bagian `onPressed` pada `FloatingActionButton` menjadi seperti berikut.
+
+```dart
+onPressed: () async {
+  try {
+    await _initializeControllerFuture;
+
+    final image = await _controller.takePicture();
+
+    if (!context.mounted) return;
+
+    await Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => PhotoFilterCarousel(
+          imagePath: image.path,
+        ),
+      ),
+    );
+  } catch (e) {
+    print(e);
+  }
+},
+```
+
+Pada kode tersebut, setelah foto berhasil diambil menggunakan `takePicture()`, path foto dikirim ke halaman `PhotoFilterCarousel`.
+
+```dart
+PhotoFilterCarousel(
+  imagePath: image.path,
+)
+```
+
+Dengan demikian, foto hasil kamera dapat langsung diberi filter menggunakan filter carousel.
+
+Output hasil penggabungan:
+
+![output tugas praktikum](img/tugas_hasil.jpeg)
+
+---
+
+### 3. Jelaskan maksud `void async` pada Praktikum 1
+
+Pada Praktikum 1, fungsi `main()` dibuat menjadi fungsi asynchronous.
+
+Kode yang digunakan adalah sebagai berikut.
+
+```dart
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  final cameras = await availableCameras();
+
+  final firstCamera = cameras.first;
+
+  runApp(
+    MaterialApp(
+      theme: ThemeData.dark(),
+      home: TakePictureScreen(
+        camera: firstCamera,
+      ),
+      debugShowCheckedModeBanner: false,
+    ),
+  );
+}
+```
+
+Maksud dari `async` adalah fungsi tersebut dapat menjalankan proses asynchronous, yaitu proses yang membutuhkan waktu untuk selesai.
+
+Pada kode tersebut, proses asynchronous terjadi ketika aplikasi mengambil daftar kamera yang tersedia pada perangkat menggunakan `availableCameras()`.
+
+```dart
+final cameras = await availableCameras();
+```
+
+Keyword `await` digunakan untuk menunggu proses pengambilan daftar kamera selesai. Setelah daftar kamera berhasil diperoleh, kamera pertama disimpan ke dalam variabel `firstCamera`, kemudian aplikasi dijalankan menggunakan `runApp()`.
+
+Sementara itu, `void` berarti fungsi tidak mengembalikan nilai. Pada Flutter modern, jika fungsi `main()` menggunakan `async`, maka penulisannya lebih tepat menggunakan `Future<void> main() async`.
+
+Dengan demikian, `Future<void> main() async` berarti fungsi utama aplikasi tidak mengembalikan nilai secara langsung, tetapi memiliki proses asynchronous yang harus ditunggu sebelum aplikasi dijalankan.
+
+---
+
+### 4. Jelaskan fungsi anotasi `@immutable` dan `@override`
+
+#### Fungsi `@immutable`
+
+Anotasi `@immutable` digunakan untuk menandai bahwa sebuah class bersifat immutable atau tidak berubah setelah object dibuat.
+
+Contoh penggunaan:
+
+```dart
+@immutable
+class PhotoFilterCarousel extends StatefulWidget {
+  const PhotoFilterCarousel({
+    super.key,
+    required this.imagePath,
+  });
+
+  final String imagePath;
+
+  @override
+  State<PhotoFilterCarousel> createState() => _PhotoFilterCarouselState();
+}
+```
+
+Pada class yang diberi anotasi `@immutable`, field sebaiknya dibuat menggunakan `final`. Hal ini bertujuan agar nilai properti tidak berubah setelah object dibuat.
+
+Dalam Flutter, widget umumnya bersifat immutable. Jika ada data yang berubah, perubahan tersebut dikelola melalui class `State`, bukan dengan mengubah langsung properti widget.
+
+Dengan demikian, `@immutable` membantu menjaga struktur widget agar lebih aman dan sesuai dengan konsep Flutter.
+
+#### Fungsi `@override`
+
+Anotasi `@override` digunakan untuk menandai bahwa sebuah method menimpa atau mengganti method dari class induknya.
+
+Contoh penggunaan:
+
+```dart
+@override
+Widget build(BuildContext context) {
+  return Scaffold();
+}
+```
+
+Method `build()` berasal dari class induk seperti `StatelessWidget` atau `State`. Ketika method tersebut ditulis ulang pada class yang dibuat, maka digunakan anotasi `@override`.
+
+Contoh lain:
+
+```dart
+@override
+void initState() {
+  super.initState();
+}
+```
+
+Method `initState()` berasal dari class `State` dan dijalankan ketika widget pertama kali dibuat.
+
+Dengan menggunakan `@override`, compiler dapat membantu mengecek apakah method yang ditulis benar-benar berasal dari class induk. Jika nama method salah, maka akan muncul peringatan atau error.
+
+---
+
+### 5. Link Commit Repository GitHub
+
+Setelah seluruh praktikum dan tugas selesai, project dipush ke repository GitHub.
